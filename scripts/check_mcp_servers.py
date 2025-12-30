@@ -192,8 +192,14 @@ def check_mcp_server(server_script, server_name, timeout=3):
         try:
             if process.poll() is None:
                 process.terminate()
-                process.wait(timeout=2)
-        except:
+                try:
+                    process.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    # Force kill if terminate didn't work
+                    process.kill()
+                    process.wait()
+        except Exception:
+            # Ignore cleanup errors
             pass
 
 def check_pythonpath():
