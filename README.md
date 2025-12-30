@@ -881,6 +881,26 @@ We're continuously enhancing DeepCode with exciting new features:
 ---
 
 <div align="left">
+
+### 🔧 **Troubleshooting**
+
+If you encounter issues with MCP server connections or tool registration:
+
+1. **Connection Errors**: See our [MCP Server Troubleshooting Guide](docs/TROUBLESHOOTING_MCP.md) for detailed solutions
+2. **Common Issues**: 
+   - "Connection closed" errors
+   - "Tool not found" errors  
+   - Python path configuration
+   - Platform-specific issues (Windows/Linux/macOS)
+
+For other issues, please check:
+- [GitHub Issues](https://github.com/HKUDS/DeepCode/issues) - Search for similar problems
+- [Discord Community](https://discord.gg/yF2MmDJyGJ) - Get help from the community
+- Create a new issue with detailed error logs and system information
+
+---
+
+<div align="left">
   
 ### 📖 **Citation**
 

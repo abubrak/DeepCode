@@ -57,11 +57,16 @@ mcp:
     code-implementation:
       args:
       - tools/code_implementation_server.py
+      # Use 'python' command - ensure Python is in PATH
+      # On Windows: 'python' or 'py'
+      # On Unix/Linux/macOS: 'python3' or 'python'
       command: python
       description: Paper code reproduction tool server - provides file operations,
         code execution, search and other functions
       env:
         PYTHONPATH: .
+        # Set encoding for cross-platform compatibility
+        PYTHONIOENCODING: utf-8
     code-reference-indexer:
       args:
       - tools/code_reference_indexer.py
@@ -70,12 +75,15 @@ mcp:
         search from indexed repositories
       env:
         PYTHONPATH: .
+        PYTHONIOENCODING: utf-8
     command-executor:
       args:
       - tools/command_executor.py
       command: python
+      description: Command executor server - Executes shell commands for file tree creation
       env:
         PYTHONPATH: .
+        PYTHONIOENCODING: utf-8
     document-segmentation:
       args:
       - tools/document_segmentation_server.py
@@ -84,6 +92,7 @@ mcp:
         and segmented reading to optimize token usage
       env:
         PYTHONPATH: .
+        PYTHONIOENCODING: utf-8
     fetch:
       args:
       - mcp-server-fetch
@@ -92,14 +101,18 @@ mcp:
       args:
       - tools/pdf_downloader.py
       command: python
+      description: PDF file downloader server - Downloads research papers and documents
       env:
         PYTHONPATH: .
+        PYTHONIOENCODING: utf-8
     github-downloader:
       args:
       - tools/git_command.py
       command: python
+      description: GitHub repository downloader - Clones and manages git repositories
       env:
         PYTHONPATH: .
+        PYTHONIOENCODING: utf-8
 # LLM Provider Priority (选择使用哪个LLM / Choose which LLM to use)
 # Options: "anthropic", "google", "openai"
 # If not set or provider unavailable, will fallback to first available provider

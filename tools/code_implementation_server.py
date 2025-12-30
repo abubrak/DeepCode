@@ -25,27 +25,41 @@ import shutil
 import logging
 from datetime import datetime
 
+# Setup logging first
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # Set standard output encoding to UTF-8
-if sys.stdout.encoding != "utf-8":
+current_encoding = sys.stdout.encoding
+needs_utf8 = not current_encoding or (current_encoding.lower() != "utf-8")
+
+if needs_utf8:
     try:
         if hasattr(sys.stdout, "reconfigure"):
             sys.stdout.reconfigure(encoding="utf-8")
             sys.stderr.reconfigure(encoding="utf-8")
         else:
-            sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding="utf-8")
-            sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding="utf-8")
+            sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding="utf-8", line_buffering=True)
+            sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding="utf-8", line_buffering=True)
+        logger.info("Set output encoding to UTF-8")
     except Exception as e:
-        print(f"Warning: Could not set UTF-8 encoding: {e}")
+        logger.warning(f"Could not set UTF-8 encoding: {e}")
 
 # Import MCP related modules
-from mcp.server.fastmcp import FastMCP
-
-# Setup logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+try:
+    from mcp.server.fastmcp import FastMCP
+    logger.info("MCP FastMCP imported successfully")
+except ImportError as e:
+    logger.error(f"Failed to import MCP modules: {e}")
+    logger.error("Please install mcp-agent: pip install mcp-agent")
+    sys.exit(1)
 
 # Create FastMCP server instance
 mcp = FastMCP("code-implementation-server")
+logger.info("Code Implementation MCP Server initialized")
 
 # Global variables: workspace directory and operation history
 WORKSPACE_DIR = None
@@ -1486,31 +1500,40 @@ async def get_operation_history(last_n: int = 10) -> str:
 
 def main():
     """Start MCP server"""
-    print("🚀 Code Implementation MCP Server")
-    print(
-        "📝 Paper Code Implementation Tool Server / Paper Code Implementation Tool Server"
-    )
-    print("")
-    print("Available tools / Available tools:")
-    # print("  • read_file           - Read file contents / Read file contents")
-    print(
-        "  • read_code_mem       - Read code summary from implement_code_summary.md / Read code summary from implement_code_summary.md"
-    )
-    print("  • write_file          - Write file contents / Write file contents")
-    print("  • execute_python      - Execute Python code / Execute Python code")
-    print("  • execute_bash        - Execute bash command / Execute bash commands")
-    print("  • search_code         - Search code patterns / Search code patterns")
-    print("  • get_file_structure  - Get file structure / Get file structure")
-    print("  • set_workspace       - Set workspace / Set workspace")
-    print("  • get_operation_history - Get operation history / Get operation history")
-    print("")
-    print("🔧 Server starting...")
+    try:
+        logger.info("=" * 60)
+        logger.info("🚀 Code Implementation MCP Server")
+        logger.info("📝 Paper Code Implementation Tool Server / Paper Code Implementation Tool Server")
+        logger.info(f"Python version: {sys.version}")
+        logger.info(f"Working directory: {Path.cwd()}")
+        logger.info("")
+        logger.info("Available tools / Available tools:")
+        # logger.info("  • read_file           - Read file contents / Read file contents")
+        logger.info(
+            "  • read_code_mem       - Read code summary from implement_code_summary.md / Read code summary from implement_code_summary.md"
+        )
+        logger.info("  • write_file          - Write file contents / Write file contents")
+        logger.info("  • execute_python      - Execute Python code / Execute Python code")
+        logger.info("  • execute_bash        - Execute bash command / Execute bash commands")
+        logger.info("  • search_code         - Search code patterns / Search code patterns")
+        logger.info("  • get_file_structure  - Get file structure / Get file structure")
+        logger.info("  • set_workspace       - Set workspace / Set workspace")
+        logger.info("  • get_operation_history - Get operation history / Get operation history")
+        logger.info("")
+        logger.info("🔧 Server starting...")
+        logger.info("=" * 60)
 
-    # Initialize default workspace
-    initialize_workspace()
+        # Initialize default workspace
+        initialize_workspace()
 
-    # Start server
-    mcp.run()
+        # Start server
+        mcp.run()
+        
+    except KeyboardInterrupt:
+        logger.info("Server stopped by user")
+    except Exception as e:
+        logger.error(f"Fatal error starting server: {e}", exc_info=True)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -877,6 +877,24 @@ python cli/main_cli.py
 
 ---
 
+### 🔧 **问题排查**
+
+如果您遇到 MCP 服务器连接或工具注册问题：
+
+1. **连接错误**: 请参阅我们的 [MCP 服务器故障排查指南](docs/TROUBLESHOOTING_MCP.md) 获取详细解决方案
+2. **常见问题**:
+   - "Connection closed" 连接关闭错误
+   - "Tool not found" 工具未找到错误
+   - Python 路径配置问题
+   - 平台特定问题 (Windows/Linux/macOS)
+
+其他问题，请查看：
+- [GitHub Issues](https://github.com/HKUDS/DeepCode/issues) - 搜索类似问题
+- [Discord 社区](https://discord.gg/yF2MmDJyGJ) - 从社区获取帮助
+- 创建新 issue 并附上详细错误日志和系统信息
+
+---
+
 ### 📄 **许可证**
 
 <img src="https://img.shields.io/badge/License-MIT-4ecdc4?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="MIT License">
