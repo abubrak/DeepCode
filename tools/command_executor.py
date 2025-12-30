@@ -6,16 +6,47 @@ Command Executor MCP Tool / 命令执行器 MCP 工具
 Specialized in executing LLM-generated shell commands to create file tree structures
 """
 
+import sys
+import io
 import subprocess
+import logging
 from pathlib import Path
 from typing import List, Dict
-from mcp.server.models import InitializationOptions
-import mcp.types as types
-from mcp.server import NotificationOptions, Server
-import mcp.server.stdio
+
+# Configure logging first
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Set standard output encoding to UTF-8 for cross-platform compatibility
+if sys.stdout.encoding != "utf-8":
+    try:
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8")
+            sys.stderr.reconfigure(encoding="utf-8")
+        else:
+            sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding="utf-8", line_buffering=True)
+            sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding="utf-8", line_buffering=True)
+        logger.info("Set output encoding to UTF-8")
+    except Exception as e:
+        logger.warning(f"Could not set UTF-8 encoding: {e}")
+
+try:
+    from mcp.server.models import InitializationOptions
+    import mcp.types as types
+    from mcp.server import NotificationOptions, Server
+    import mcp.server.stdio
+    logger.info("MCP modules imported successfully")
+except ImportError as e:
+    logger.error(f"Failed to import MCP modules: {e}")
+    logger.error("Please install mcp-agent: pip install mcp-agent")
+    sys.exit(1)
 
 # 创建MCP服务器实例 / Create MCP server instance
 app = Server("command-executor")
+logger.info("Command Executor MCP Server initialized")
 
 
 @app.list_tools()
@@ -302,23 +333,39 @@ async def main():
     """
     运行MCP服务器 / Run MCP server
     """
-    # 通过stdio运行服务器 / Run server via stdio
-    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-        await app.run(
-            read_stream,
-            write_stream,
-            InitializationOptions(
-                server_name="command-executor",
-                server_version="1.0.0",
-                capabilities=app.get_capabilities(
-                    notification_options=NotificationOptions(),
-                    experimental_capabilities={},
+    try:
+        logger.info("Starting Command Executor MCP Server...")
+        logger.info(f"Python version: {sys.version}")
+        logger.info(f"Working directory: {Path.cwd()}")
+        
+        # 通过stdio运行服务器 / Run server via stdio
+        async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+            logger.info("stdio streams established")
+            await app.run(
+                read_stream,
+                write_stream,
+                InitializationOptions(
+                    server_name="command-executor",
+                    server_version="1.0.0",
+                    capabilities=app.get_capabilities(
+                        notification_options=NotificationOptions(),
+                        experimental_capabilities={},
+                    ),
                 ),
-            ),
-        )
+            )
+    except Exception as e:
+        logger.error(f"Failed to start MCP server: {e}", exc_info=True)
+        # Re-raise to ensure proper error reporting
+        raise
 
 
 if __name__ == "__main__":
     import asyncio
-
-    asyncio.run(main())
+    
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Server stopped by user")
+    except Exception as e:
+        logger.error(f"Fatal error: {e}", exc_info=True)
+        sys.exit(1)
