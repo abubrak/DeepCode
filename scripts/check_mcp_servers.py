@@ -117,15 +117,21 @@ def check_encoding():
     """Check system encoding settings"""
     print_header("4. Checking Encoding Configuration")
     
-    print_info(f"stdout encoding: {sys.stdout.encoding}")
-    print_info(f"stderr encoding: {sys.stderr.encoding}")
+    stdout_enc = sys.stdout.encoding or "unknown"
+    stderr_enc = sys.stderr.encoding or "unknown"
+    print_info(f"stdout encoding: {stdout_enc}")
+    print_info(f"stderr encoding: {stderr_enc}")
     print_info(f"Default encoding: {sys.getdefaultencoding()}")
     
     # Check environment variable
     pythonioencoding = os.environ.get('PYTHONIOENCODING', 'Not set')
     print_info(f"PYTHONIOENCODING: {pythonioencoding}")
     
-    if sys.stdout.encoding.lower() == 'utf-8' or pythonioencoding.lower() == 'utf-8':
+    # Check if UTF-8 encoding is set (case-insensitive)
+    stdout_is_utf8 = stdout_enc.lower() == 'utf-8' if stdout_enc != "unknown" else False
+    env_is_utf8 = pythonioencoding.lower() == 'utf-8' if pythonioencoding != 'Not set' else False
+    
+    if stdout_is_utf8 or env_is_utf8:
         print_success("UTF-8 encoding is configured")
         return True
     else:
