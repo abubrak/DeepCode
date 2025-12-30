@@ -128,8 +128,10 @@ def check_encoding():
     print_info(f"PYTHONIOENCODING: {pythonioencoding}")
     
     # Check if UTF-8 encoding is set (case-insensitive)
-    stdout_is_utf8 = stdout_enc.lower() == 'utf-8' if stdout_enc != "unknown" else False
-    env_is_utf8 = pythonioencoding.lower() == 'utf-8' if pythonioencoding != 'Not set' else False
+    stdout_is_utf8 = (stdout_enc != "unknown" and stdout_enc is not None and 
+                     stdout_enc.lower() == 'utf-8')
+    env_is_utf8 = (pythonioencoding != 'Not set' and pythonioencoding is not None and 
+                   pythonioencoding.lower() == 'utf-8')
     
     if stdout_is_utf8 or env_is_utf8:
         print_success("UTF-8 encoding is configured")
