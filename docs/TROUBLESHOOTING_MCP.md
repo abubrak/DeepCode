@@ -235,7 +235,27 @@ args:
 
 ## Diagnostic Commands
 
-### Check MCP Server Health
+### Automated Health Check
+
+We provide an automated health check script that verifies your MCP server setup:
+
+```bash
+# Run the health check
+python scripts/check_mcp_servers.py
+
+# Or make it executable and run directly
+chmod +x scripts/check_mcp_servers.py
+./scripts/check_mcp_servers.py
+```
+
+The health check will verify:
+- Python version and availability
+- Required dependencies installation
+- Encoding configuration
+- PYTHONPATH settings
+- MCP server startup capability
+
+### Manual Health Checks
 
 1. **List available Python installations:**
    ```bash
