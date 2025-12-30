@@ -33,7 +33,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Set standard output encoding to UTF-8
-if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+if not sys.stdout.encoding or sys.stdout.encoding.lower() != "utf-8":
     try:
         if hasattr(sys.stdout, "reconfigure"):
             sys.stdout.reconfigure(encoding="utf-8")
